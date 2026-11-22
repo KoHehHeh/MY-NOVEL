@@ -395,7 +395,7 @@ function vCfg(){
  '<div class="card"><b>ข้อมูล</b><p class="mute">ข้อมูลอยู่ในเบราว์เซอร์นี้ ควรสำรองไว้เป็นระยะ</p><button data-a="bk">สำรอง / นำเข้าข้อมูล</button></div>';
 }
 function render(){
- const t=S.tab,n0=S.sel.length;if(LN===0&&n0>0&&t==="ch"&&!RUN&&!BUSY)S.shOpen=true;LN=n0;
+ const t=S.tab,n0=S.sel.length;if(!n0)S.shOpen=false;LN=n0;
  $("#v").innerHTML=({ch:vCh,ed:vEd,gl:vGl,rd:vRd,rv:vRv,cfg:vCfg})[t]();head();nav();sbar();shUI();
  if(S.sc){S.sc=false;const e=$(".ln.cur");if(e)e.scrollIntoView({block:"center"})}
 }
@@ -424,8 +424,8 @@ document.addEventListener("click",e=>{
   mode:()=>{S.mode=t.dataset.m;render();save()},
   flt:()=>{S.filter=t.dataset.k;render()},
   sort:()=>{S.desc=!S.desc;render();toast(S.desc?"เรียงจากตอนล่าสุด":"เรียงจากตอนแรก")},
-  sel:()=>{S.sel=t.checked?[...S.sel,id]:S.sel.filter(x=>x!==id);render()},
-  selall:()=>{const ids=S.chapters.filter(c=>S.filter==="all"||(S.filter==="fix"&&issues(c).length)||(S.filter==="todo"&&!c.tr.trim())||(S.filter==="done"&&c.tr.trim())).map(c=>c.id);S.sel=t.checked?[...new Set([...S.sel,...ids])]:S.sel.filter(x=>!ids.includes(x));render()},
+  sel:()=>{const was=S.sel.length;S.sel=t.checked?[...S.sel,id]:S.sel.filter(x=>x!==id);if(!was&&S.sel.length)S.shOpen=true;render()},
+  selall:()=>{S.shOpen=false;const ids=S.chapters.filter(c=>S.filter==="all"||(S.filter==="fix"&&issues(c).length)||(S.filter==="todo"&&!c.tr.trim())||(S.filter==="done"&&c.tr.trim())).map(c=>c.id);S.sel=t.checked?[...new Set([...S.sel,...ids])]:S.sel.filter(x=>!ids.includes(x));render()},
   delsel:()=>{if(!S.sel.length)return toast("เลือกตอนที่ต้องการลบก่อน");ask("ลบ "+S.sel.length+" ตอนที่เลือกใช่ไหม",()=>{S.chapters=S.chapters.filter(c=>!S.sel.includes(c.id));S.sel=[];render();save()})},
   open:()=>{d.open&&d.close();S.cur=id;S.last=id;S.es=chap(id)&&chap(id).tr.trim()?"tr":"src";go("ed")},
   menu:()=>dlg('<b>'+esc((chap(id)||{}).title)+'</b><div class="set"><button data-a="open" data-id="'+id+'">เปิดแก้ไข</button><button data-a="gemd" data-id="'+id+'">แปลด้วย Gemini</button><button class="del" data-a="del1" data-id="'+id+'">ลบตอนนี้</button><button data-a="close">ปิด</button></div>'),
@@ -437,7 +437,7 @@ document.addEventListener("click",e=>{
   pickfile:()=>{S.pop=false;render();$("#fi").click()},
   paste:()=>{S.pop=false;render();dlg('<b>วางข้อความ</b><div class="set"><input id="nti" placeholder="ชื่อตอน"><textarea id="nsr" placeholder="วางข้อความต้นฉบับ (เว้นว่างได้)"></textarea><button class="pri" data-a="addsave">เพิ่มตอน</button><button data-a="close">ปิด</button></div>')},
   addsave:()=>{const c={id:uid(),title:$("#nti").value.trim()||"ตอนที่ "+(S.chapters.length+1),src:$("#nsr").value,tr:""};S.chapters.push(c);d.close();render();save();toast("เพิ่มตอนแล้ว")},
-  run:runAuto,selall2:()=>{S.sel=S.sel.length===S.chapters.length?[]:S.chapters.map(c=>c.id);render()},sbex:()=>exAll(S.chapters.filter(c=>S.sel.includes(c.id))),sbtr:()=>{S.shOpen=true;render()},shclose:()=>{S.shOpen=false;render()},shx:()=>{S.exf=t.dataset.v==="1";save();render()},shgo:()=>{S.shOpen=false;runAuto(true)},shex:()=>{S.shOpen=false;exAll(S.chapters.filter(c=>S.sel.includes(c.id)))},chm:()=>{d.open&&d.close();S.shOpen=false;go("cfg")},togl:()=>{d.open&&d.close();go("gl")},
+  run:runAuto,selall2:()=>{S.shOpen=false;S.sel=S.sel.length===S.chapters.length?[]:S.chapters.map(c=>c.id);render()},sbex:()=>exAll(S.chapters.filter(c=>S.sel.includes(c.id))),sbtr:()=>{S.shOpen=true;render()},shclose:()=>{S.shOpen=false;render()},shx:()=>{S.exf=t.dataset.v==="1";save();render()},shgo:()=>{S.shOpen=false;runAuto(true)},shex:()=>{S.shOpen=false;exAll(S.chapters.filter(c=>S.sel.includes(c.id)))},chm:()=>{d.open&&d.close();S.shOpen=false;go("cfg")},togl:()=>{d.open&&d.close();go("gl")},
 rc:()=>{const L=S.chapters.filter(c=>c.tr.trim()),k=L.findIndex(c=>c.id===S.rc)+Number(t.dataset.d);if(L[k]){S.rc=L[k].id;S.ri=0;render();$("#v").scrollTop=0}},ob:()=>{S.ob=t.checked;render()},rv:()=>{const c=chap(S.rc),n=lines(c).filter(l=>l.bad.length).length;if(n){S.ri=((S.ri||0)+Number(t.dataset.d)+n)%n;S.sc=true;render()}},ok:()=>{const c=chap(S.rc),b=lines(c).filter(l=>l.bad.length)[S.ri||0];if(b){c.ig=c.ig||{};c.ig[b.i]=1;S.sc=true;render();save()}},fixl:()=>fixLine(id,Number(t.dataset.i)),
 ge:()=>{S.ge=S.ge===id?null:id;$("#gl").innerHTML=glRows()},ga:()=>{S.ga=!S.ga;render()},exall:()=>exAll(S.chapters),exone:()=>{const c=chap(S.cur);if(c){c.ex=false;exAll([c])}},exf:()=>{S.exf=t.checked;save()},
 stop:()=>{STOP=true;toast("กำลังหยุด...")},
