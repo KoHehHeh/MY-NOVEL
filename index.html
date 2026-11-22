@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>โต๊ะแปลนิยาย</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&family=Noto+Serif+Thai:wght@400;600&display=swap">
+<style>
+:root{--bg:#faf8f4;--panel:#fff;--ink:#25221e;--mute:#7a736a;--line:#e8e3da;--soft:#f1ede5;--acc:#85602a;--accT:#fff;--ok:#2f6b45;--warn:#b3472e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1814;--panel:#242119;--ink:#f1ece3;--mute:#a79f92;--line:#38332a;--soft:#2c281f;--acc:#d9a65a;--accT:#1d1608;--ok:#6fc08e;--warn:#ff9a80}}
+:root[data-theme="dark"]{--bg:#1a1814;--panel:#242119;--ink:#f1ece3;--mute:#a79f92;--line:#38332a;--soft:#2c281f;--acc:#d9a65a;--accT:#1d1608;--ok:#6fc08e;--warn:#ff9a80}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans Thai",system-ui,sans-serif;display:flex;flex-direction:column}
+button,input,textarea,select{font:inherit;color:var(--ink)}
+input,textarea{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0;width:100%}
+button{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:8px 14px;min-height:42px;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+button.pri{background:var(--acc);color:var(--accT);border-color:var(--acc);font-weight:600}
+button.del{color:var(--warn)}
+.mute{color:var(--mute);font-size:14px}
+#hd{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--line)}
+.ttl{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
+.ttl b{font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ib{width:42px;padding:0;font-size:20px}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:3px}
+.seg button{border:0;background:none;border-radius:10px;min-height:38px;padding:4px 12px}
+.seg button.on{background:var(--acc);color:var(--accT);font-weight:600}
+main{flex:1;min-height:0;overflow:auto;padding:16px 16px 28px}
+h2{margin:0;font-size:26px;line-height:1.3}
+.top{display:flex;gap:8px;align-items:flex-start;justify-content:space-between}
+.top>div:first-child{min-width:0}
+.ibtns{display:flex;gap:8px;position:relative}
+.ibtns button{min-width:46px;padding:0 10px;min-height:46px}
+.pop{position:absolute;right:0;top:56px;background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 28px rgba(0,0,0,.18);z-index:5;padding:6px;min-width:260px}
+.ibtns .pop button{display:flex;gap:14px;width:100%;border:0;min-height:54px;font-size:17px;justify-content:flex-start;align-items:center;padding:0 14px;background:none}
+select{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 11px;min-width:0}
+.gr{display:flex;align-items:center;gap:12px;padding:14px 12px;border-top:1px solid var(--line);cursor:pointer}
+.gr:first-child{border-top:0}
+.gr .gs{width:32%;flex:none;font-family:"Noto Serif Thai",serif;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gr b{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:13px;color:var(--mute);white-space:nowrap}
+.gl-edit{display:grid;gap:8px;padding:12px;border-top:1px solid var(--line);background:var(--soft)}
+.u{text-decoration:underline dotted var(--acc);text-underline-offset:6px;text-decoration-thickness:2px}
+.ln{display:flex;gap:10px;padding:12px 6px;border-bottom:1px dashed var(--line)}
+.ln.cur{background:var(--soft);border-radius:12px}
+.ln>div{flex:1;min-width:0}.ln>.mute{width:22px;flex:none}
+.ln .src{font-family:"Noto Serif Thai",serif;font-size:16px}
+.ln .tl{font-size:17px;padding:4px 0;outline:none}
+.sr{display:grid;gap:2px;padding:10px 0;border-top:1px solid var(--line)}
+.sr select{border:0;background:none;font-weight:600;font-size:17px;padding:2px 0}
+#sb{display:none;background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:0 12px 8px;padding:14px;box-shadow:0 6px 24px rgba(0,0,0,.12)}
+#sb.on{display:block}#sb .acc{color:var(--acc)}#sb .bar button{min-height:48px}
+.r.sel{background:var(--soft)}
+dialog.sheet{margin:auto auto 0;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+#sh{display:none;position:fixed;left:0;right:0;bottom:0;margin:0 auto;width:100%;max-width:560px;max-height:74dvh;overflow:auto;overscroll-behavior:contain;background:var(--panel);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;padding:0 18px 0;box-shadow:0 -10px 34px rgba(0,0,0,.2);z-index:20}
+#sh.on{display:block}
+.stk{position:sticky;bottom:0;background:var(--panel);justify-content:flex-end;padding:10px 0 calc(16px + env(safe-area-inset-bottom,0px))}
+.grabw{display:block;width:100%;border:0;background:none;min-height:30px;padding:10px 0 6px;border-radius:0}
+.grab{display:block;width:56px;height:6px;border-radius:9px;background:var(--line);margin:0 auto}
+body.shon #toast{bottom:auto;top:calc(14px + env(safe-area-inset-top,0px))}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;min-height:84px;border-radius:16px;position:relative;padding:12px 14px;white-space:normal}
+.opt.on{background:var(--soft);border:2px solid var(--acc)}.opt:disabled{opacity:.55}
+.opt b{font-weight:600;font-size:16px;line-height:1.35;padding-right:22px}
+.ck{position:absolute;right:10px;top:10px;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--accT);display:grid;place-items:center;font-style:normal;font-size:14px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:5px 0}
+.cost{background:var(--soft);padding:10px 14px;margin:12px 0;border-radius:12px}
+.lnk{border:0;background:none;color:var(--acc);padding:0 4px;min-height:32px}
+.prog{height:7px;background:var(--soft);border-radius:9px;overflow:hidden;margin:8px 0 14px}
+.prog i{display:block;height:100%;background:var(--ok)}
+.pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px}
+.pill{border-radius:999px;white-space:nowrap}
+.pill.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.auto{background:var(--soft);border-radius:14px;padding:12px;margin:8px 0;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:8px}
+.r{display:flex;align-items:center;gap:12px;padding:6px 12px;min-height:60px;border-top:1px solid var(--line)}
+.r.h{background:var(--soft);border-top:0;color:var(--mute);min-height:48px}
+.r input[type=checkbox]{width:22px;height:22px;flex:none;accent-color:var(--acc)}
+.r .n{width:24px;color:var(--mute);flex:none}
+.r .t{flex:1;min-width:0;font-weight:400;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.ok{color:var(--ok);font-size:20px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--acc);vertical-align:top;margin-left:-3px}
+.r button{border:0;background:none;width:42px;padding:0;font-size:20px}
+nav{display:flex;align-items:flex-end;background:var(--panel);border-top:1px solid var(--line);padding:6px 4px 8px}
+nav button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:0;font-size:13px;position:relative;padding:4px 2px;border-radius:14px}
+nav button span{font-size:20px;line-height:1.3}
+nav button.on{font-weight:600;background:var(--soft)}
+nav .fab span{width:58px;height:58px;border-radius:50%;background:var(--acc);color:var(--accT);display:grid;place-items:center;margin-top:-26px}
+nav .fab.on{background:none}
+nav b{position:absolute;top:-2px;right:12px;background:var(--acc);color:var(--accT);border-radius:999px;font-size:12px;padding:0 6px}
+.ed{display:flex;flex-direction:column;gap:10px}
+.ed textarea{min-height:46vh;line-height:1.9;font-family:"Noto Serif Thai",serif;font-size:17px;resize:vertical;display:none}
+.ed[data-s=src] #ts,.ed[data-s=tr] #tt{display:block}
+.seg2{display:flex;gap:8px}.seg2 button{flex:1}.seg2 button.on{background:var(--ink);color:var(--bg)}
+.bar{display:flex;flex-wrap:wrap;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border-radius:999px;background:var(--soft);min-height:36px;padding:4px 12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px}
+.g{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.g .nt{grid-column:1/3}
+.add{display:grid;gap:8px;margin:12px 0}
+.rd{font-family:"Noto Serif Thai",serif;line-height:2;max-width:640px;margin:0 auto}
+.rd p{margin:0 0 1em}
+.set{display:grid;gap:8px;margin-top:10px}
+#toast{z-index:30;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);border-radius:999px;padding:8px 16px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw}
+#toast.on{opacity:1}
+dialog{width:min(520px,92vw);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:16px}
+dialog textarea{height:200px;font-size:13px}
+@media (min-width:900px){main{padding:20px calc(50% - 460px)}.ed{flex-direction:row;flex-wrap:wrap}.ed>*{flex:1 1 100%}.ed textarea{display:block;flex:1 1 calc(50% - 8px);min-height:60vh}.seg2{display:none}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+<header id="hd"></header>
+<main id="v"></main>
+<div id="sb"></div>
+<div id="sh" role="dialog" aria-label="แปลตอนที่เลือก"></div>
+<nav id="nv"></nav>
+<div id="toast" role="status"></div>
+<dialog id="dlg"></dialog>
+<input type="file" id="fi" accept=".txt,.docx,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple hidden>
+<script>
+const $=s=>document.querySelector(s),K="novel-tl-v2",KG="novel-tl-gemini";
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const def=()=>({proj:{name:"นิยายของฉัน",author:""},tab:"ch",mode:"man",desc:false,filter:"all",sel:[],cur:null,last:null,fs:19,es:"tr",q:"",gc:"",exf:true,sty:{},warnAll:false,
+ chapters:[{id:uid(),title:"ตอนที่ 1",src:"林夜走进青云宗，掌门看着他。",tr:""}],
+ glossary:[{id:uid(),src:"林夜",tr:"หลินเย่",note:"ตัวเอก (ตัวอย่าง ลบได้)"},{id:uid(),src:"青云宗",tr:"สำนักชิงอวิ๋น",note:""},{id:uid(),src:"掌门",tr:"ประมุขสำนัก",note:""}]});
+let S;try{S=Object.assign(def(),JSON.parse(localStorage.getItem(K)||"null")||{})}catch(e){S=def()}
+if(!Array.isArray(S.chapters))S=def();S.pop=false;S.ge=null;S.ga=false;S.shOpen=false;let LN=(S.sel||[]).length;
+let CFG={key:"",model:"gemini-3.1-flash-lite",lang:"จีน เป็น ไทย",style:"สำนวนนิยายที่อ่านลื่น คงน้ำเสียงตัวละคร"};
+try{Object.assign(CFG,JSON.parse(localStorage.getItem(KG)||"{}"))}catch(e){}
+let RUN=false,STOP=false,BUSY=false,prog="",tm=null,tt=null;
+const chap=id=>S.chapters.find(c=>c.id===id);
+const warn=(g,c)=>S.warnAll||g.u||!c.ta||(g.at||0)<=c.ta;
+function lines(c){
+ const sl=c.src.split("\n"),tl=c.tr.split("\n"),n=Math.max(sl.length,tl.length),o=[],has=!!c.tr.trim();
+ const T=has?S.glossary.filter(g=>g.src&&g.tr&&c.src.includes(g.src)&&warn(g,c)):[];
+ for(let i=0;i<n;i++){const a=sl[i]||"",b=tl[i]||"";if(!a.trim()&&!b.trim())continue;
+  o.push({i,s:a,t:b,bad:(c.ig||{})[i]?[]:T.filter(g=>a.includes(g.src)&&!b.includes(g.tr))})}
+ return o;
+}
+const issues=c=>lines(c).flatMap(l=>l.bad);
+const hl=(a,ts)=>{let h=esc(a);ts.forEach(g=>{h=h.split(esc(g.src)).join('<u class="u">'+esc(g.src)+'</u>')});return h};
+function save(){clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){toast("บันทึกอัตโนมัติไม่ได้ ใช้ปุ่มสำรองข้อมูลเก็บไว้")}},400)}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2600)}
+let YES=null;
+function ask(m,fn){YES=fn;dlg('<b>'+esc(m)+'</b><div class="bar" style="margin-top:12px"><button class="pri" data-a="yes">ยืนยัน</button><button data-a="close">ยกเลิก</button></div>')}
+const em=e=>e instanceof TypeError?"เชื่อมต่อ Gemini ไม่ได้ (ถูกบล็อกหรือไม่มีอินเทอร์เน็ต) ถ้าเปิดไฟล์ในหน้าพรีวิวของแอป ให้เปิดในเบราว์เซอร์จริงหรืออัปขึ้นโฮสต์":e.message;
+function dlg(h,cls){const d=$("#dlg");d.className=cls||"";d.innerHTML=h;if(!d.open)d.showModal()}
+
+/* ---------- Gemini ---------- */
+function chunks(text,max){const o=[];let c="";for(const p of text.split("\n")){if(c&&(c+"\n"+p).length>max){o.push(c);c=p}else c=c?c+"\n"+p:p}if(c)o.push(c);return o}
+const STY={
+"ตัวละคร":[["ถอดเสียงจีนกลาง","林风 → หลินเฟิง"],["แปลความหมายของชื่อ","林风 → สายลมพนา"],["คงอักษรต้นฉบับ","林风 → 林风"]],
+"สถานที่":[["แปลความหมายทั้งหมด","青云山 → ภูเขาเมฆคราม"],["ทับศัพท์ทั้งหมด","青云山 → ชิงอวิ๋นซาน"],["ผสม: ชื่อเฉพาะทับศัพท์ คำสามัญแปลความหมาย","青云山 → ภูเขาชิงอวิ๋น"]],
+"องค์กร":[["แปลความหมาย","天剑宗 → สำนักกระบี่สวรรค์"],["ทับศัพท์","天剑宗 → สำนักเทียนเจี้ยน"]],
+"เผ่าพันธุ์":[["แปลความหมายให้สละสลวย","精灵 → เผ่าภูต"],["ทับศัพท์","精灵 → จิงหลิง"]],
+"สิ่งของ":[["บรรยายรูปลักษณ์ / คุณสมบัติ","九转金丹 → ยาทองคำหลอมเก้ารอบ"],["ทับศัพท์","九转金丹 → จิ่วจ่วนจินตัน"]],
+"เทคโนโลยี":[["ศัพท์เทคโนโลยีไทย","飞舟 → เรือเหาะ"],["ทับศัพท์","飞舟 → เฟยโจว"]],
+"วิชา":[["วรรณศิลป์แนวกำลังภายใน","破天剑诀 → เคล็ดกระบี่ทะลวงฟ้า"],["แปลตรงตัว","破天剑诀 → วิชากระบี่ทำลายสวรรค์"],["ทับศัพท์","破天剑诀 → ผั่วเทียนเจี้ยนจเหวีย"]],
+"ระบบ":[["ศัพท์เกมเมอร์ไทย","系统提示 → ระบบแจ้งเตือน"],["แปลตรงตัว","系统提示 → ข้อความเตือนจากระบบ"]],
+"คำเรียกขาน":[["ใช้คำเรียกแบบไทย","师兄 → ศิษย์พี่"],["ทับศัพท์","师兄 → ซือเสียง"]],
+tone:[["กึ่งโบราณกึ่งสมัยใหม่","你找死! → เจ้ากำลังหาที่ตายหรือไง!"],["ภาษาโบราณเต็มรูปแบบ","你找死! → เจ้ารนหาที่ตายหรือ!"],["ภาษาสมัยใหม่","你找死! → แกอยากตายหรือไง!"]],
+pron:[["ข้า / เจ้า","我不会放过你 → ข้าจะไม่ปล่อยเจ้าไป"],["ฉัน / เธอ","我不会放过你 → ฉันจะไม่ปล่อยเธอไป"],["ผม / คุณ","我不会放过你 → ผมจะไม่ปล่อยคุณไป"]],
+end:[["ใช้คำลงท้ายไทย","师兄，请留步 → ศิษย์พี่ โปรดรอก่อนขอรับ"],["ไม่ใช้คำลงท้าย","师兄，请留步 → ศิษย์พี่ โปรดรอก่อน"]],
+idiom:[["หาสำนวนไทยเทียบ","对牛弹琴 → สีซอให้ควายฟัง"],["แปลตรงตัว","对牛弹琴 → ดีดพิณให้วัวฟัง"]],
+unit:[["คงหน่วยจีนโบราณ","三丈之外 → ห่างออกไปสามจั้ง"],["แปลงเป็นหน่วยสากล","三丈之外 → ห่างออกไปราวสิบเมตร"]],
+punct:[["มาตรฐานไทย","“走吧。” → “ไปกันเถอะ”"],["คงแบบจีน","“走吧。” → “ไปกันเถอะ。”"]],
+viol:[["ตามเนื้อหาเดิม","鲜血溅满一地 → เลือดสาดกระเซ็นเต็มพื้น"],["ลดความรุนแรง","鲜血溅满一地 → เลือดเปื้อนเต็มพื้น"]],
+fid:[["สมดุล","อ่านลื่นและครบความหมาย"],["ตรงตัว","แปลใกล้ต้นฉบับที่สุด"],["อิสระ","เรียบเรียงใหม่ให้อ่านลื่นที่สุด"]]};
+const LBL={"ตัวละคร":"ชื่อตัวละคร","สถานที่":"สถานที่ / มิติ","องค์กร":"องค์กร / สำนัก","เผ่าพันธุ์":"เผ่าพันธุ์","สิ่งของ":"สิ่งของ / โอสถ","เทคโนโลยี":"ยานพาหนะ / เทคโนโลยี","วิชา":"วิชา / ทักษะ","ระบบ":"ระบบ","คำเรียกขาน":"คำเรียกขาน",tone:"โทนภาษา",pron:"สรรพนาม",end:"คำลงท้าย",idiom:"สำนวน",unit:"หน่วยวัด",punct:"เครื่องหมายวรรคตอน",viol:"ความรุนแรง",fid:"ความตรงต่อเนื้อหาเดิม"};
+const NK=["ตัวละคร","สถานที่","องค์กร","เผ่าพันธุ์","สิ่งของ","เทคโนโลยี","วิชา","ระบบ","คำเรียกขาน"],SK=["tone","pron","end","idiom","unit","punct","viol","fid"];
+const pol=ks=>ks.map(k=>{const x=STY[k][(S.sty||{})[k]||0];return "- "+LBL[k]+": "+x[0]+" (ตัวอย่าง "+x[1]+")"}).join("\n");
+const CATS=["ตัวละคร","สถานที่","องค์กร","สิ่งของ","เทคโนโลยี","วิชา","เผ่าพันธุ์","ระบบ","คำเรียกขาน","อื่นๆ"];
+const SCH={type:"ARRAY",items:{type:"OBJECT",properties:{src:{type:"STRING"},tr:{type:"STRING"},cat:{type:"STRING",enum:CATS},note:{type:"STRING"}},required:["src","tr","cat"]}};
+async function gcall(sys,user,json){
+ const body={systemInstruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{text:user}]}]};
+ if(json){body.generationConfig={responseMimeType:"application/json",maxOutputTokens:8192,temperature:0.2};if(json!==true)body.generationConfig.responseSchema=json}
+ let r,d;
+ for(let k=0;k<4;k++){
+  r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(CFG.model)+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":CFG.key},body:JSON.stringify(body)});
+  d=await r.json().catch(()=>({}));
+  if(r.status!==429&&r.status!==503)break;
+  if(k<3){toast("Gemini ยุ่งอยู่ รอแล้วลองใหม่...");await new Promise(z=>setTimeout(z,4000*2**k));if(STOP)throw new Error("หยุดแล้ว")}
+ }
+ if(!r.ok)throw new Error(d.error&&d.error.message||"HTTP "+r.status);
+ const c=((d.candidates||[])[0]||{}).content;
+ if(!c||!c.parts){const why=(d.promptFeedback||{}).blockReason||((d.candidates||[])[0]||{}).finishReason;throw new Error("Gemini ไม่ส่งผลกลับมา"+(why?" ("+why+")":" (อาจถูกกรองเนื้อหา)"))}
+ return c.parts.map(p=>p.text||"").join("");
+}
+const gem=(part,terms)=>gcall("คุณคือนักแปลนิยาย แปล"+CFG.lang+" "+CFG.style+"\nแนวทางการแปล:\n"+pol(SK)+"\nแปลเฉพาะเนื้อหา ไม่อธิบายเพิ่ม คงการขึ้นบรรทัดใหม่ตามต้นฉบับ"+(terms.length?"\nต้องใช้ศัพท์ตามนี้เท่านั้น:\n"+terms.map(g=>g.src+" = "+g.tr).join("\n"):""),part);
+function parseArr(t){
+ t=String(t).replace(/^\s*```(?:json)?\s*|\s*```\s*$/g,"").trim();let v;const bad=new Error("อ่านผลสกัดคำไม่ได้ ลองใหม่อีกครั้ง");
+ try{v=JSON.parse(t)}catch(e){const k=t.lastIndexOf("}");if(k<0)throw bad;try{v=JSON.parse(t.slice(0,k+1).replace(/,\s*$/,"")+(t.startsWith("[")?"]":""))}catch(x){throw bad}}
+ if(!Array.isArray(v))v=Object.values(v||{}).find(Array.isArray)||[];
+ return v;
+}
+const TRD="們這個來說為時對後還會開見長張學動點現過經從裡麼實幾無問間關頭應當氣體覺難臉變門車馬鳥魚龍鬥帥師產親與還議論該讓麼樣種機術將軍陣殺傷強歲聲視願響風飛歸務識齊億萬劍島嶺歷錄藥靈龜獸鎮鐵錢銀鋒門連運遠選邊險靜頁顏願蘭樓離雲電"
+,SMP="们这个来说为时对后还会开见长张学动点现过经从里么实几无问间关头应当气体觉难脸变门车马鸟鱼龙斗帅师产亲与还议论该让么样种机术将军阵杀伤强岁声视愿响风飞归务识齐亿万剑岛岭历录药灵龟兽镇铁钱银锋门连运远选边险静页颜愿兰楼离云电";
+const scriptOf=t=>{let a=0,b=0;for(const ch of String(t).slice(0,6000)){if(TRD.includes(ch))a++;if(SMP.includes(ch))b++}return a+b<5?"":a>=b?"trad":"simp"};
+const conv=(a,from,to)=>[...a].map(ch=>{const i=from.indexOf(ch);return i>=0&&to[i]!==undefined?to[i]:ch}).join("");
+function fit(a,text){
+ a=String(a||"").replace(/[\s　]+/g,"");if(!a)return null;
+ if(text.includes(a))return a;
+ for(const [f,t] of [[SMP,TRD],[TRD,SMP]]){const b=conv(a,[...f],[...t]);if(b!==a&&text.includes(b))return b}
+ return null;
+}
+const goodSrc=a=>a.length>=2&&a.length<=14&&!/^[\d\s\p{P}\p{S}]+$/u.test(a);
+async function askTerms(sys,p){
+ let raw;try{raw=await gcall(sys,p,SCH)}catch(e){if(/schema|INVALID_ARGUMENT|enum/i.test(e.message))raw=await gcall(sys,p,true);else throw e}
+ return parseArr(raw);
+}
+async function extract(c,out){
+ const have=new Set(S.glossary.map(g=>g.src));let raw=0,known=0;
+ const sc=scriptOf(c.src),hint=sc==="trad"?"ต้นฉบับเป็นอักษรจีนตัวเต็ม src ต้องเป็นตัวเต็มตามต้นฉบับ ห้ามแปลงเป็นตัวย่อ":sc==="simp"?"ต้นฉบับเป็นอักษรจีนตัวย่อ src ต้องเป็นตัวย่อตามต้นฉบับ ห้ามแปลงเป็นตัวเต็ม":"src ต้องเป็นอักษรเดียวกับต้นฉบับ";
+ for(const p of chunks(c.src.trim(),6000)){
+  if(STOP)throw new Error("หยุดแล้ว");
+  const kn=S.glossary.filter(g=>g.src&&p.includes(g.src)).map(g=>g.src+"="+g.tr);known+=kn.length;
+  const sys="คุณช่วยสกัดคำเฉพาะจากนิยาย ("+CFG.lang+") ตอบเป็น JSON array เท่านั้น แต่ละรายการคือ {\"src\":คำต้นฉบับ,\"tr\":คำแปลหรือทับศัพท์เป็นไทย,\"cat\":หนึ่งใน "+CATS.join("/")+",\"note\":หมายเหตุสั้นๆ หรือว่าง}\nเอาให้ครบ: ชื่อบุคคล ชื่อสถานที่ องค์กร เผ่าพันธุ์ คำเรียกขาน ชื่อวิชา ระบบ ระดับขั้น และสิ่งของสำคัญที่ปรากฏในข้อความ ไม่เอาคำทั่วไปและไม่เอาคำที่มีตัวอักษรเดียว\nsrc ต้องคัดลอกจากต้นฉบับตรงตัวทุกตัวอักษร ("+hint+")\nแนวทางการตั้งคำแปลในช่อง tr ตามหมวด:\n"+pol(NK)+(kn.length?"\nคำที่มีในคลังแล้ว ห้ามส่งซ้ำ:\n"+kn.slice(0,300).join("\n"):"");
+  let items=await askTerms(sys,p);
+  if(!items.length&&kn.length<3){if(STOP)throw new Error("หยุดแล้ว");items=await askTerms(sys+"\nข้อความนี้มีชื่อเฉพาะแน่นอน ต้องส่งอย่างน้อยชื่อบุคคลและสถานที่ที่พบ",p)}
+  raw+=items.length;
+  const ok=[],bad=[];
+  for(const t of items){const b=String(t.tr||"").trim(),f=fit(t.src,p);if(!b||!t||!t.src)continue;if(f)ok.push({src:f,tr:b,cat:t.cat,note:t.note});else bad.push({src:String(t.src).trim(),tr:b,cat:t.cat,note:t.note})}
+  if(bad.length&&!STOP){
+   try{for(const r of await askTerms("ด้านล่างคือต้นฉบับและรายการคำที่สกัดไว้ แต่ src ของบางรายการไม่ตรงกับอักษรในต้นฉบับ ให้แก้ src โดยคัดลอกจากต้นฉบับตรงตัวทุกตัวอักษร ("+hint+") รายการใดหาในต้นฉบับไม่พบจริงให้ตัดทิ้ง ตอบเป็น JSON array รูปแบบเดิม","รายการ:\n"+JSON.stringify(bad.slice(0,40))+"\n\nต้นฉบับ:\n"+p)){const f=fit(r&&r.src,p),b=String((r&&r.tr)||"").trim();if(f&&b)ok.push({src:f,tr:b,cat:r.cat,note:r.note})}}catch(e){if(e.message==="หยุดแล้ว")throw e}
+  }
+  for(const t of ok){if(have.has(t.src)||!goodSrc(t.src))continue;have.add(t.src);const g={id:uid(),src:t.src,tr:t.tr,cat:CATS.includes(t.cat)?t.cat:"อื่นๆ",at:Date.now(),note:String(t.note||"").trim()};S.glossary.push(g);out.push(g)}
+  save();
+ }
+ const done=raw>0||known>0;if(done)c.ex=true;save();return done;
+}
+function exResult(add,total,empty,err){
+ const chips=add.slice(0,30).map(g=>'<span class="tag">'+esc(g.src)+' = '+esc(g.tr)+'</span>').join(" ");
+ dlg('<b style="font-size:19px">'+(err?"สกัดคำไม่สำเร็จ":"สกัดคำเสร็จแล้ว")+'</b><p style="margin:8px 0">เพิ่มศัพท์ใหม่ <b>'+add.length+'</b> คำ จาก '+total+' ตอน</p>'+
+  (err?'<p class="mute" style="color:var(--warn)">'+esc(err)+'</p>':"")+
+  (empty.length?'<p class="mute" style="color:var(--warn)">โมเดลไม่ส่งคำกลับมาเลยในตอน: '+esc(empty.join(", "))+' (ยังไม่ถือว่าสกัดแล้ว กดสกัดซ้ำได้)</p>':"")+
+  (add.length?'<div class="chips" style="margin:8px 0">'+chips+(add.length>30?' <span class="mute">…อีก '+(add.length-30)+' คำ</span>':"")+'</div>':(!err&&!empty.length?'<p class="mute">ไม่พบคำใหม่ที่ยังไม่อยู่ในคลัง</p>':""))+
+  '<div class="bar" style="margin-top:12px;justify-content:flex-end"><button data-a="close">ปิด</button><button class="pri" data-a="togl">ดูคลังศัพท์</button></div>');
+}
+async function exAll(list){
+ if(BUSY||RUN||needKey())return;
+ const q=list.filter(c=>c.src.trim()&&!c.ex);if(!q.length)return toast("ไม่มีตอนที่ต้องสกัดคำ");
+ BUSY=true;STOP=false;const add=[],empty=[];let err="";
+ try{for(let i=0;i<q.length&&!STOP;i++){prog="สกัดคำ "+(i+1)+"/"+q.length+": "+q[i].title;render();if(!(await extract(q[i],add)))empty.push(q[i].title)}}catch(e){err=em(e)}
+ BUSY=false;prog="";render();
+ if(STOP&&!err){toast("หยุดแล้ว เพิ่มศัพท์ "+add.length+" คำ");return}
+ exResult(add,q.length,empty,err);
+}
+async function trans(c){
+ const terms=S.glossary.filter(g=>g.src&&g.tr&&c.src.includes(g.src)),out=[];
+ for(const p of chunks(c.src.trim(),3000)){if(STOP)throw new Error("หยุดแล้ว");out.push(await gem(p,terms))}
+ return out.join("\n");
+}
+function needKey(){if(CFG.key)return false;toast("ใส่ Gemini API key ในตั้งค่าก่อน");S.tab="cfg";render();return true}
+async function transOne(id,force){
+ const c=chap(id);if(!c||BUSY||needKey())return;
+ if(!c.src.trim())return toast("ตอนนี้ยังไม่มีต้นฉบับ");
+ if(c.tr.trim()&&!force)return ask("แทนที่คำแปลเดิมของตอนนี้ใช่ไหม",()=>transOne(id,true));
+ BUSY=true;STOP=false;prog="กำลังแปล: "+c.title;render();
+ try{if(S.exf&&!c.ex){toast("กำลังสกัดคำ...");await extract(c,[])}c.tr=await trans(c);c.ta=Date.now();save();toast("แปลเสร็จแล้ว ตรวจและแก้ไขได้เลย")}catch(e){toast("แปลไม่สำเร็จ: "+em(e))}
+ BUSY=false;prog="";render();
+}
+async function runAuto(force){
+ if(RUN||BUSY||needKey())return;
+ const pool=S.sel.length?S.chapters.filter(c=>S.sel.includes(c.id)):S.chapters,q=pool.filter(c=>c.src.trim()&&(force===true||!c.tr.trim()));
+ if(!q.length)return toast("ไม่มีตอนที่ต้องแปล");
+ RUN=true;STOP=false;const add=[],empty=[];
+ for(let i=0;i<q.length&&!STOP;i++){prog="กำลังแปล "+(i+1)+"/"+q.length+": "+q[i].title;render();
+  try{if(S.exf&&!q[i].ex){prog="สกัดคำ "+(i+1)+"/"+q.length+": "+q[i].title;render();if(!(await extract(q[i],add)))empty.push(q[i].title)}prog="กำลังแปล "+(i+1)+"/"+q.length+": "+q[i].title;render();q[i].tr=await trans(q[i]);q[i].ta=Date.now();save()}catch(e){toast("หยุด: "+em(e));break}}
+ RUN=false;prog="";if(force===true)S.sel=[];render();toast(STOP?"หยุดแล้ว":"จบการแปล"+(add.length?" · เพิ่มศัพท์ใหม่ "+add.length+" คำ":"")+(empty.length?" · สกัดคำไม่สำเร็จ "+empty.length+" ตอน":""));
+}
+
+/* ---------- views ---------- */
+const mshort=m=>String(m||"").replace(/^gemini-/,"").replace(/^(\d[\d.]*)-/,"$1 ").replace(/(^|[ -])([a-z])/g,(x,a,b)=>a+b.toUpperCase());
+function sbar(){
+ const e=$("#sb"),n=S.sel.length,sel=S.chapters.filter(c=>S.sel.includes(c.id)),need=sel.filter(c=>c.src.trim()&&!c.ex).length;
+ if(RUN||BUSY){e.className="on";e.innerHTML='<div class="top"><div><b>กำลังทำงาน</b><div class="mute">'+esc(prog||"กรุณารอสักครู่...")+'</div></div><button class="del" data-a="stop">หยุด</button></div>';return}
+ if(S.tab!=="ch"||!n||S.shOpen){e.className="";e.innerHTML="";return}
+ e.className="on";
+ e.innerHTML='<b style="font-size:19px">เลือก '+n+' ตอน</b><div class="mute">'+esc(mshort(CFG.model))+' · รออ่านเลย'+(need?' · <span class="acc">ยังไม่สกัดคำ '+need+' ตอน</span>':"")+'</div><div class="bar" style="margin-top:10px;flex-wrap:nowrap"><button class="del" data-a="delsel" aria-label="ลบ">🗑</button><button data-a="selall2" aria-label="เลือกทั้งหมดหรือล้าง">☑</button><button style="flex:1" data-a="sbex">✦ สกัดคำ</button><button class="pri" style="flex:1.3" data-a="sbtr">แปล '+n+' ตอน</button></div>';
+}
+function shUI(){
+ const h=$("#sh"),v=$("#v"),on=S.shOpen&&S.tab==="ch"&&S.sel.length&&!RUN&&!BUSY;
+ document.body.classList.toggle("shon",!!on);
+ if(!on){h.className="";h.innerHTML="";v.style.paddingBottom="";return}
+ const keep=h.scrollTop;h.innerHTML=sheetHTML();h.className="on";h.scrollTop=keep;
+ v.style.paddingBottom=(h.offsetHeight+16)+"px";
+}
+function sheetHTML(){
+ const sel=S.chapters.filter(c=>S.sel.includes(c.id)),n=sel.length;
+ const need=sel.filter(c=>c.src.trim()&&!c.ex).length,chars=sel.reduce((a,c)=>a+c.src.length,0),had=sel.filter(c=>c.tr.trim()).length;
+ const o=(on,top,t,v,dis)=>'<button class="opt'+(on?" on":"")+'" '+(dis?"disabled":'data-a="shx" data-v="'+v+'"')+'><span class="mute">'+top+'</span><b>'+t+'</b>'+(on?'<i class="ck">✓</i>':"")+'</button>';
+ return '<button class="grabw" data-a="shclose" aria-label="ย่อลง"><i class="grab"></i></button><div class="top"><b style="font-size:21px">แปล '+n+' ตอน</b><button class="ib" data-a="shclose" aria-label="ปิด">✕</button></div>'+
+ '<p class="mute" style="margin:10px 0 6px">'+(need?"มี "+need+" ตอนที่ยังไม่สกัดคำ":"สกัดคำครบทุกตอนที่เลือกแล้ว")+'</p>'+
+ '<div class="opts">'+o(S.exf,"แนะนำ","สกัดคำก่อน แล้วแปลต่อ",1)+o(!S.exf,"เร็วกว่า","ข้าม ใช้คลังศัพท์ที่มีอยู่",0)+'</div>'+
+ '<p class="mute" style="margin:14px 0 6px">ต้องการอ่านเมื่อไร</p><div class="opts">'+o(true,"รออ่านเลย","ได้ผลเร็ว ราคาปกติ",1)+o(false,"ประหยัด","ยังไม่รองรับในเวอร์ชันนี้",0,true)+'</div>'+
+ (had?'<p class="mute" style="color:var(--warn);margin:10px 0 0">'+had+' ตอนมีคำแปลอยู่แล้ว จะถูกแทนที่</p>':"")+
+ '<div class="card"><div class="kv"><span class="mute">งาน</span><span>แปล '+n+' ตอน · '+chars.toLocaleString("th-TH")+' ตัวอักษรต้นฉบับ</span></div><div class="kv"><span class="mute">โมเดล</span><span>Gemini '+esc(mshort(CFG.model))+' · รออ่านเลย</span></div><div class="kv"><span class="mute">งบต่อครั้ง</span><span>อัตโนมัติ</span></div><div class="kv" style="align-items:center">'+(need?'<button class="lnk" data-a="shex">สกัดคำอย่างเดียว</button>':"<span></span>")+'<button class="lnk" data-a="chm">เปลี่ยนโมเดล</button></div></div>'+
+ '<div class="cost"><div class="kv"><b>ใช้คีย์ฟรีของคุณ</b><b>'+(CFG.key?"คิดตามแพ็กเกจของ Google":"ยังไม่ได้ใส่ API key")+'</b></div><div class="kv"><b>ค่าบริการ</b><b>฿0 · ฟรี</b></div></div>'+
+ '<div class="bar stk"><button data-a="shclose">ปิด</button><button class="pri" data-a="shgo">ยืนยัน</button></div>';
+}
+function head(){
+ const ed=S.tab==="ed";
+ $("#hd").innerHTML=(ed?'<button class="ib" data-a="back" aria-label="กลับ">‹</button>':"")+
+ '<div class="ttl"><b>'+esc(S.proj.name)+'</b><span class="mute">'+esc(S.proj.author?S.proj.author+" · ":"")+S.chapters.length+' ตอน</span></div>'+
+ (S.tab==="ch"?'<div class="seg"><button data-a="mode" data-m="auto" class="'+(S.mode==="auto"?"on":"")+'">อัตโนมัติ</button><button data-a="mode" data-m="man" class="'+(S.mode==="man"?"on":"")+'">ปรับแต่ง</button></div>':"")+
+ '<button class="ib" data-a="bk" aria-label="สำรองข้อมูล">≡</button>';
+}
+function nav(){
+ const n=S.chapters.reduce((a,c)=>a+issues(c).length,0),t=S.tab==="ed"?"ch":S.tab;
+ const b=(k,i,l,x)=>'<button data-a="tab" data-k="'+k+'" class="'+(t===k?"on ":"")+(x||"")+'"><span>'+i+'</span>'+l+(k==="rv"&&n?'<b>'+n+'</b>':"")+'</button>';
+ $("#nv").innerHTML=b("ch","☰","ตอน")+(S.mode==="auto"?"":b("gl","▤","คลังศัพท์"))+b("rd","▶","อ่านต่อ","fab")+(S.mode==="auto"?"":b("rv","☑","ตรวจงาน"))+b("cfg","⚙","ตั้งค่า");
+}
+function vCh(){
+ const L=S.chapters,done=L.filter(c=>c.tr.trim()).length,F={all:L.length,fix:L.filter(c=>issues(c).length).length,todo:L.length-done,done};
+ const pills=[["all","ทั้งหมด"],["fix","มีจุดเกลา"],["todo","ยังไม่แปล"],["done","แปลแล้ว"]].map(p=>'<button class="pill '+(S.filter===p[0]?"on":"")+'" data-a="flt" data-k="'+p[0]+'">'+p[1]+" "+F[p[0]]+'</button>').join("");
+ let rows=L.map((c,i)=>({c,n:i+1})).filter(x=>S.filter==="all"||(S.filter==="fix"&&issues(x.c).length)||(S.filter==="todo"&&!x.c.tr.trim())||(S.filter==="done"&&x.c.tr.trim()));
+ if(S.desc)rows.reverse();
+ const all=rows.length&&rows.every(x=>S.sel.includes(x.c.id));
+ const auto=S.mode==="auto"?'<div class="auto"><div>'+(RUN?esc(prog):"แปลต่อเนื่องด้วย Gemini ทีละตอน "+(S.sel.length?"เฉพาะตอนที่เลือก":"ทุกตอนที่ยังไม่แปล"))+'<br><label class="mute" style="display:flex;align-items:center;gap:6px"><input type="checkbox" style="width:20px;height:20px" data-a="exf" '+(S.exf?"checked":"")+'> สกัดคำก่อนแปล (แนะนำ)</label></div>'+(RUN?'<button class="del" data-a="stop">หยุด</button>':'<button class="pri" data-a="run">เริ่มแปล</button>')+'</div>':"";
+ return '<div class="top"><div><h2>ตอนทั้งหมด</h2><p class="mute" style="margin:2px 0 0">เพิ่มไฟล์ TXT หรือวางข้อความได้จากปุ่ม +</p></div><div class="ibtns"><button data-a="sort" aria-label="เรียงลำดับ">⇅</button><button class="del" data-a="delsel" aria-label="ลบที่เลือก">ลบ</button><button class="pri" data-a="add" aria-label="เพิ่มตอน">+</button>'+(S.pop?'<div class="pop"><button data-a="pickfile">⬆ เลือกไฟล์ (TXT, DOCX)</button><button data-a="paste">✎ วางข้อความ</button></div>':"")+'</div></div>'+
+ '<p style="margin:14px 0 0"><b>'+done+'</b> แปลแล้ว &nbsp; <b>'+F.todo+'</b> ยังไม่แปล</p><div class="prog"><i style="width:'+(L.length?done/L.length*100:0)+'%"></i></div><div class="pills">'+pills+'</div>'+auto+
+ '<div class="tbl"><div class="r h"><input type="checkbox" data-a="selall" '+(all?"checked":"")+' aria-label="เลือกทั้งหมด"><span class="n">#</span><span>ชื่อตอน</span></div>'+
+ (rows.length?rows.map(x=>'<div class="r'+(S.sel.includes(x.c.id)?" sel":"")+'"><input type="checkbox" data-a="sel" data-id="'+x.c.id+'" '+(S.sel.includes(x.c.id)?"checked":"")+' aria-label="เลือกตอน"><span class="n">'+x.n+'</span><b class="t" data-a="open" data-id="'+x.c.id+'">'+esc(x.c.title||"(ไม่มีชื่อ)")+'</b>'+(x.c.tr.trim()?'<span class="ok">✓'+(issues(x.c).length?'<i class="dot"></i>':"")+'</span>':'<span class="mute">ยังไม่แปล</span>')+'<button data-a="menu" data-id="'+x.c.id+'" aria-label="เมนูตอน">⋯</button></div>').join(""):'<div class="r"><span class="mute">ไม่มีตอนในหมวดนี้</span></div>')+'</div>';
+}
+function found(c){const h=S.glossary.filter(g=>g.src&&g.tr&&c.src.includes(g.src));return h.length?h.map(g=>'<button class="chip" data-a="ins" data-t="'+esc(g.tr)+'" title="'+esc(g.note)+'">'+esc(g.src)+" = "+esc(g.tr)+'</button>').join(""):'<span class="mute">ยังไม่พบคำศัพท์ในต้นฉบับ</span>'}
+function vEd(){
+ const c=chap(S.cur);if(!c){S.tab="ch";return vCh()}
+ return '<div class="ed" data-s="'+S.es+'"><input data-b="ch|'+c.id+'|title" value="'+esc(c.title)+'" aria-label="ชื่อตอน">'+
+ '<div class="seg2"><button data-a="es" data-s="src" class="'+(S.es==="src"?"on":"")+'">ต้นฉบับ</button><button data-a="es" data-s="tr" class="'+(S.es==="tr"?"on":"")+'">คำแปล</button></div>'+
+ '<textarea id="ts" data-b="ch|'+c.id+'|src" placeholder="วางข้อความต้นฉบับที่นี่">'+esc(c.src)+'</textarea><textarea id="tt" data-b="ch|'+c.id+'|tr" placeholder="คำแปล">'+esc(c.tr)+'</textarea>'+
+ '<div class="bar"><button class="pri" data-a="gem" data-id="'+c.id+'">แปลด้วย Gemini</button><button data-a="apply">ใช้ศัพท์กับร่างแปล</button><button data-a="pickterm">เพิ่มข้อความที่เลือกเป็นศัพท์</button><button data-a="exone">สกัดคำจากตอนนี้</button><button data-a="copy">คัดลอกคำแปล</button><label class="mute" style="display:flex;align-items:center;gap:6px"><input type="checkbox" style="width:20px;height:20px" data-a="exf" '+(S.exf?"checked":"")+'> สกัดคำก่อนแปล</label></div>'+
+ '<div class="mute">คำศัพท์ที่พบในตอนนี้ (แตะเพื่อแทรกในคำแปล)</div><div class="chips" id="found">'+found(c)+'</div></div>';
+}
+function glRows(){
+ const q=(S.q||"").toLowerCase();
+ let L=S.glossary.filter(g=>(!S.gc||(g.cat||"อื่นๆ")===S.gc)&&(!q||(g.src+g.tr+g.note+(g.cat||"")).toLowerCase().includes(q)));
+ const tot=L.length;L=L.slice(0,200);
+ const co=k=>CATS.map(c=>'<option'+(c===k?" selected":"")+'>'+c+'</option>').join("");
+ const f=(g,k,ph)=>'<input data-b="g|'+g.id+'|'+k+'" value="'+esc(g[k])+'" placeholder="'+ph+'" aria-label="'+ph+'">';
+ if(!L.length)return '<div class="gr"><span class="mute">ยังไม่มีคำศัพท์ที่ตรงกัน</span></div>';
+ return L.map(g=>S.ge===g.id?'<div class="gl-edit">'+f(g,"src","ต้นฉบับ")+f(g,"tr","คำแปล")+'<select data-b="g|'+g.id+'|cat" aria-label="หมวด">'+co(g.cat||"อื่นๆ")+'</select>'+f(g,"note","หมายเหตุ")+'<div class="bar"><button class="pri" data-a="ge" data-id="">เสร็จ</button><button class="del" data-a="delg" data-id="'+g.id+'">ลบ</button></div></div>':'<div class="gr" data-a="ge" data-id="'+g.id+'"><span class="gs">'+esc(g.src)+'</span><b>'+esc(g.tr)+'</b><span class="tag">'+esc(g.cat||"อื่นๆ")+'</span><span class="mute">›</span></div>').join("")+(tot>200?'<div class="gr"><span class="mute">แสดง 200 จาก '+tot+' คำ ใช้ค้นหาหรือเลือกหมวดเพื่อกรอง</span></div>':"");
+}
+function vGl(){
+ const p=S.pre||"";S.pre="";if(p)S.ga=true;
+ const n=S.chapters.filter(c=>c.src.trim()&&!c.ex).length,cnt={};
+ S.glossary.forEach(g=>{const k=g.cat||"อื่นๆ";cnt[k]=(cnt[k]||0)+1});
+ const opts='<option value="">ทุกหมวด ('+S.glossary.length+')</option>'+CATS.filter(k=>cnt[k]).map(k=>'<option value="'+k+'"'+(S.gc===k?" selected":"")+'>'+k+' ('+cnt[k]+')</option>').join("");
+ const af=S.ga?'<div class="card set"><input id="ns" placeholder="คำต้นฉบับ" value="'+esc(p)+'"><input id="nt" placeholder="คำแปล"><select id="nc" aria-label="หมวด">'+CATS.map(c=>'<option>'+c+'</option>').join("")+'</select><input id="nn" placeholder="หมายเหตุ (ถ้ามี)"><div class="bar"><button class="pri" data-a="addterm">เพิ่มคำศัพท์</button><button data-a="ga">ยกเลิก</button></div></div>':"";
+ return '<div class="top"><div><h2>คลังศัพท์</h2><p class="mute" style="margin:2px 0 0">'+S.glossary.length+' คำ · ใช้กับการแปลทุกตอนของเรื่องนี้</p></div><div class="ibtns"><button class="pri" data-a="ga" aria-label="เพิ่มคำ">+</button></div></div>'+
+ (n?'<div class="auto"><div>มี '+n+' ตอนที่ยังไม่ได้สกัดคำ</div><button class="pri" data-a="exall">สกัดคำ</button></div>':"")+af+
+ '<div class="bar" style="margin:12px 0"><select data-b="gc||gc" style="flex:1" aria-label="หมวด">'+opts+'</select><input type="search" data-b="q||q" style="flex:1" placeholder="ค้นหาคำ" value="'+esc(S.q)+'"></div><div id="gl" class="tbl">'+glRows()+'</div>';
+}
+function vRd(){
+ const L=S.chapters;let i=L.findIndex(c=>c.id===S.last);if(i<0)i=Math.max(0,L.findIndex(c=>c.tr.trim()));
+ const c=L[i];if(!c)return '<h2>อ่านต่อ</h2><p class="mute">ยังไม่มีตอน เพิ่มตอนได้ที่แท็บตอน</p>';
+ S.last=c.id;
+ return '<div class="bar" style="justify-content:space-between;max-width:640px;margin:0 auto 12px"><button data-a="rd" data-d="-1" '+(i<1?"disabled":"")+'>‹ ก่อนหน้า</button><span><button data-a="fs" data-d="-1">ก-</button> <button data-a="fs" data-d="1">ก+</button></span><button data-a="rd" data-d="1" '+(i>=L.length-1?"disabled":"")+'>ถัดไป ›</button></div>'+
+ '<div class="rd" style="font-size:'+S.fs+'px"><h2 style="font-size:1.4em;margin-bottom:.6em">'+esc(c.title)+'</h2>'+(c.tr.trim()?c.tr.split("\n").filter(x=>x.trim()).map(x=>"<p>"+esc(x)+"</p>").join(""):'<p class="mute">ตอนนี้ยังไม่มีคำแปล</p><button class="pri" data-a="open" data-id="'+c.id+'">ไปแปลตอนนี้</button>')+'</div>';
+}
+function vRv(){
+ const L=S.chapters.filter(c=>c.tr.trim());
+ if(!L.length)return '<h2>ตรวจงาน</h2><p class="mute">ยังไม่มีตอนที่แปลแล้ว</p>';
+ let k=L.findIndex(c=>c.id===S.rc);if(k<0)k=0;const c=L[k];S.rc=c.id;
+ const ls=lines(c),bad=ls.filter(l=>l.bad.length);S.ri=Math.min(S.ri||0,Math.max(0,bad.length-1));
+ const cur=bad[S.ri];
+ return '<div class="bar" style="justify-content:space-between;align-items:center"><span class="bar" style="align-items:center;flex-wrap:nowrap"><button data-a="rc" data-d="-1" '+(k<1?"disabled":"")+' aria-label="ตอนก่อนหน้า">‹</button><b>'+esc(c.title)+'</b><span class="mute">'+(k+1)+'/'+L.length+'</span><button data-a="rc" data-d="1" '+(k>=L.length-1?"disabled":"")+' aria-label="ตอนถัดไป">›</button></span><label class="mute" style="display:flex;gap:6px;align-items:center"><input type="checkbox" style="width:20px;height:20px" data-a="ob" '+(S.ob?"checked":"")+'> เฉพาะบรรทัดที่มีปัญหา</label></div>'+
+ (bad.length?'<div class="auto"><div>'+(S.ri+1)+' / '+bad.length+' · บรรทัด '+(cur.i+1)+' ชื่อไม่ตรงคลัง</div><div class="bar"><button data-a="ok" aria-label="ยอมรับบรรทัดนี้">✓</button><button data-a="rv" data-d="-1" aria-label="ปัญหาก่อนหน้า">▲</button><button data-a="rv" data-d="1" aria-label="ปัญหาถัดไป">▼</button></div></div>':'<div class="auto">ไม่พบชื่อที่ไม่ตรงคลังในตอนนี้</div>')+
+ ls.filter(l=>!S.ob||l.bad.length).map(l=>'<div class="ln'+(cur&&cur.i===l.i?" cur":"")+'"><span class="mute">'+(l.i+1)+'</span><div><div class="mute src">'+hl(l.s,l.bad)+'</div><div class="tl" contenteditable="true" onkeydown="if(event.keyCode==13)event.preventDefault()" data-b="ln|'+c.id+'|'+l.i+'">'+esc(l.t)+'</div>'+(l.bad.length?'<div class="bar">'+l.bad.map(g=>'<span class="tag">'+esc(g.src)+' = '+esc(g.tr)+'</span>').join("")+'<button data-a="fixl" data-id="'+c.id+'" data-i="'+l.i+'">ให้ Gemini แก้</button></div>':"")+'</div></div>').join("");
+}
+async function fixLine(id,i){
+ const c=chap(id);if(!c||BUSY||RUN||needKey())return;
+ const sl=c.src.split("\n"),tl=c.tr.split("\n"),a=sl[i]||"",ts=S.glossary.filter(g=>g.src&&g.tr&&a.includes(g.src));
+ BUSY=true;toast("กำลังแก้บรรทัด "+(i+1)+"...");
+ try{tl[i]=(await gcall("แก้คำแปลบรรทัดนี้ให้ใช้ศัพท์ตามนี้เท่านั้น คงความหมายและสำนวนเดิม ตอบเฉพาะบรรทัดที่แก้แล้ว\n"+ts.map(g=>g.src+" = "+g.tr).join("\n"),"ต้นฉบับ: "+a+"\nคำแปลเดิม: "+tl[i])).trim();c.tr=tl.join("\n");save();toast("แก้แล้ว")}catch(e){toast("แก้ไม่สำเร็จ: "+em(e))}
+ BUSY=false;render();
+}
+function styRows(ks){return ks.map(k=>{const o=STY[k],i=(S.sty||{})[k]||0;return '<div class="sr"><span class="mute">'+LBL[k]+'</span><select data-b="sty||'+k+'" aria-label="'+LBL[k]+'">'+o.map((x,j)=>'<option value="'+j+'"'+(j===i?" selected":"")+'>'+esc(x[0])+'</option>').join("")+'</select><span class="mute" id="ex-'+k+'">'+esc(o[i][1])+'</span></div>'}).join("")}
+function styCards(){
+ const au=S.mode==="auto";
+ return '<div class="card"><b>ชื่อและคำเฉพาะ</b> <span class="mute">ใช้ตอนสกัดคำเข้าคลังศัพท์</span>'+styRows(NK)+'</div><div class="card"><b>สำนวนการแปล</b> <span class="mute">ใช้ตอนแปลเนื้อเรื่อง</span>'+styRows(SK)+'</div>'+
+ '<div class="card"><b>การตรวจงาน</b><div class="sr"><span class="mute">คำที่เพิ่มหรือเปลี่ยนภายหลัง</span><select data-b="w||w" aria-label="การเตือน"><option value="0"'+(S.warnAll?"":" selected")+'>ไม่เตือนตอนที่แปลไปแล้ว (แนะนำ)</option><option value="1"'+(S.warnAll?" selected":"")+'>เตือนทุกตอน</option></select><span class="mute">คำที่คุณแก้ในคลังเอง เตือนทุกตอนเสมอ</span></div></div>'+
+ '<div class="card"><b>รูปแบบการใช้งาน</b><div class="sr"><span class="mute">โหมด</span><b>'+(au?"อัตโนมัติ":"ปรับแต่ง")+'</b><span class="mute">โหมดอัตโนมัติจะเหลือแค่ เพิ่มเนื้อหา กดแปล แล้วอ่าน</span><button data-a="mode" data-m="'+(au?"man":"auto")+'">ใช้โหมด'+(au?"ปรับแต่ง":"อัตโนมัติ")+'</button></div></div>';
+}
+function vCfg(){
+ const f=(k,l,t)=>'<label class="mute">'+l+'</label><input '+(t?'type="'+t+'" autocomplete="off" ':"")+'data-b="c||'+k+'" value="'+esc(CFG[k])+'">';
+ return '<h2>ตั้งค่า</h2>'+styCards()+'<div class="card set"><b>โปรเจกต์</b><label class="mute">ชื่อเรื่อง</label><input data-b="p||name" value="'+esc(S.proj.name)+'"><label class="mute">ผู้เขียน</label><input data-b="p||author" value="'+esc(S.proj.author)+'"></div>'+
+ '<div class="card set"><b>Gemini</b><p class="mute" style="margin:0">คีย์เก็บในเบราว์เซอร์เครื่องนี้เท่านั้นและส่งตรงไปที่ Google ไม่ควรใส่ในเครื่องที่ใช้ร่วมกับคนอื่น</p>'+f("key","API key","password")+f("model","ชื่อโมเดล")+f("lang","แปลจาก-เป็น เช่น จีน เป็น ไทย")+f("style","สไตล์การแปล")+'</div>'+
+ '<div class="card"><b>ข้อมูล</b><p class="mute">ข้อมูลอยู่ในเบราว์เซอร์นี้ ควรสำรองไว้เป็นระยะ</p><button data-a="bk">สำรอง / นำเข้าข้อมูล</button></div>';
+}
+function render(){
+ const t=S.tab,n0=S.sel.length;if(LN===0&&n0>0&&t==="ch"&&!RUN&&!BUSY)S.shOpen=true;LN=n0;
+ $("#v").innerHTML=({ch:vCh,ed:vEd,gl:vGl,rd:vRd,rv:vRv,cfg:vCfg})[t]();head();nav();sbar();shUI();
+ if(S.sc){S.sc=false;const e=$(".ln.cur");if(e)e.scrollIntoView({block:"center"})}
+}
+function go(t){S.tab=t;render();$("#v").scrollTop=0;save()}
+
+/* ---------- events ---------- */
+document.addEventListener("input",e=>{
+ const b=e.target.dataset.b;if(!b)return;const [k,a,f]=b.split("|"),v=e.target.value;
+ if(k==="p")S.proj[f]=v;
+ else if(k==="c"){CFG[f]=v.trim();try{localStorage.setItem(KG,JSON.stringify(CFG))}catch(x){}}
+ else if(k==="g"){const g=S.glossary.find(x=>x.id===a);if(g){g[f]=v;if(f==="tr"||f==="src"){g.u=1;g.at=Date.now()}}}
+ else if(k==="gc"){S.gc=v;$("#gl").innerHTML=glRows();save();return}
+ else if(k==="sty"){S.sty=S.sty||{};S.sty[f]=Number(v);document.getElementById("ex-"+f).textContent=STY[f][Number(v)][1];save();return}
+ else if(k==="w"){S.warnAll=v==="1";save();return}
+ else if(k==="ln"){const c=chap(a);if(c){const tl=c.tr.split("\n");tl[Number(f)]=e.target.textContent;c.tr=tl.join("\n")}save();return}
+ else if(k==="q"){S.q=v;$("#gl").innerHTML=glRows();return}
+ else if(k==="ch"){const c=chap(a);if(c){c[f]=v;if(f==="src")$("#found").innerHTML=found(c)}}
+ save();
+});
+document.addEventListener("click",e=>{
+ if(S.pop&&!e.target.closest(".pop,[data-a=add]")){S.pop=false;render()}
+ const t=e.target.closest("[data-a]");if(!t)return;
+ const a=t.dataset.a,id=t.dataset.id,d=$("#dlg");
+ const A={
+  tab:()=>go(t.dataset.k),back:()=>go("ch"),
+  mode:()=>{S.mode=t.dataset.m;render();save()},
+  flt:()=>{S.filter=t.dataset.k;render()},
+  sort:()=>{S.desc=!S.desc;render();toast(S.desc?"เรียงจากตอนล่าสุด":"เรียงจากตอนแรก")},
+  sel:()=>{S.sel=t.checked?[...S.sel,id]:S.sel.filter(x=>x!==id);render()},
+  selall:()=>{const ids=S.chapters.filter(c=>S.filter==="all"||(S.filter==="fix"&&issues(c).length)||(S.filter==="todo"&&!c.tr.trim())||(S.filter==="done"&&c.tr.trim())).map(c=>c.id);S.sel=t.checked?[...new Set([...S.sel,...ids])]:S.sel.filter(x=>!ids.includes(x));render()},
+  delsel:()=>{if(!S.sel.length)return toast("เลือกตอนที่ต้องการลบก่อน");ask("ลบ "+S.sel.length+" ตอนที่เลือกใช่ไหม",()=>{S.chapters=S.chapters.filter(c=>!S.sel.includes(c.id));S.sel=[];render();save()})},
+  open:()=>{d.open&&d.close();S.cur=id;S.last=id;S.es=chap(id)&&chap(id).tr.trim()?"tr":"src";go("ed")},
+  menu:()=>dlg('<b>'+esc((chap(id)||{}).title)+'</b><div class="set"><button data-a="open" data-id="'+id+'">เปิดแก้ไข</button><button data-a="gemd" data-id="'+id+'">แปลด้วย Gemini</button><button class="del" data-a="del1" data-id="'+id+'">ลบตอนนี้</button><button data-a="close">ปิด</button></div>'),
+  gemd:()=>{d.close();transOne(id)},
+  del1:()=>ask("ลบตอนนี้ใช่ไหม",()=>{S.chapters=S.chapters.filter(c=>c.id!==id);S.sel=S.sel.filter(x=>x!==id);render();save()}),
+  yes:()=>{d.close();const f=YES;YES=null;if(f)f()},
+  close:()=>d.close(),
+  add:()=>{S.pop=!S.pop;render()},
+  pickfile:()=>{S.pop=false;render();$("#fi").click()},
+  paste:()=>{S.pop=false;render();dlg('<b>วางข้อความ</b><div class="set"><input id="nti" placeholder="ชื่อตอน"><textarea id="nsr" placeholder="วางข้อความต้นฉบับ (เว้นว่างได้)"></textarea><button class="pri" data-a="addsave">เพิ่มตอน</button><button data-a="close">ปิด</button></div>')},
+  addsave:()=>{const c={id:uid(),title:$("#nti").value.trim()||"ตอนที่ "+(S.chapters.length+1),src:$("#nsr").value,tr:""};S.chapters.push(c);d.close();render();save();toast("เพิ่มตอนแล้ว")},
+  run:runAuto,selall2:()=>{S.sel=S.sel.length===S.chapters.length?[]:S.chapters.map(c=>c.id);render()},sbex:()=>exAll(S.chapters.filter(c=>S.sel.includes(c.id))),sbtr:()=>{S.shOpen=true;render()},shclose:()=>{S.shOpen=false;render()},shx:()=>{S.exf=t.dataset.v==="1";save();render()},shgo:()=>{S.shOpen=false;runAuto(true)},shex:()=>{S.shOpen=false;exAll(S.chapters.filter(c=>S.sel.includes(c.id)))},chm:()=>{d.open&&d.close();S.shOpen=false;go("cfg")},togl:()=>{d.open&&d.close();go("gl")},
+rc:()=>{const L=S.chapters.filter(c=>c.tr.trim()),k=L.findIndex(c=>c.id===S.rc)+Number(t.dataset.d);if(L[k]){S.rc=L[k].id;S.ri=0;render();$("#v").scrollTop=0}},ob:()=>{S.ob=t.checked;render()},rv:()=>{const c=chap(S.rc),n=lines(c).filter(l=>l.bad.length).length;if(n){S.ri=((S.ri||0)+Number(t.dataset.d)+n)%n;S.sc=true;render()}},ok:()=>{const c=chap(S.rc),b=lines(c).filter(l=>l.bad.length)[S.ri||0];if(b){c.ig=c.ig||{};c.ig[b.i]=1;S.sc=true;render();save()}},fixl:()=>fixLine(id,Number(t.dataset.i)),
+ge:()=>{S.ge=S.ge===id?null:id;$("#gl").innerHTML=glRows()},ga:()=>{S.ga=!S.ga;render()},exall:()=>exAll(S.chapters),exone:()=>{const c=chap(S.cur);if(c){c.ex=false;exAll([c])}},exf:()=>{S.exf=t.checked;save()},
+stop:()=>{STOP=true;toast("กำลังหยุด...")},
+  es:()=>{S.es=t.dataset.s;$(".ed").dataset.s=S.es;render()},
+  gem:()=>transOne(id),
+  apply:()=>{const c=chap(S.cur),ta=$("#tt");let v=ta.value,n=0;[...S.glossary].filter(g=>g.src&&g.tr).sort((x,y)=>y.src.length-x.src.length).forEach(g=>{const p=v.split(g.src);n+=p.length-1;v=p.join(g.tr)});ta.value=v;c.tr=v;save();toast("แทนที่ศัพท์ "+n+" จุด")},
+  ins:()=>{const c=chap(S.cur),ta=$("#tt"),x=t.dataset.t,s=ta.selectionStart==null?ta.value.length:ta.selectionStart,e2=ta.selectionEnd==null?s:ta.selectionEnd;ta.value=ta.value.slice(0,s)+x+ta.value.slice(e2);ta.selectionStart=ta.selectionEnd=s+x.length;c.tr=ta.value;save();toast("แทรก “"+x+"” แล้ว")},
+  pickterm:()=>{const ta=$("#ts"),w=ta.value.slice(ta.selectionStart,ta.selectionEnd).trim();if(!w)return toast("เลือกข้อความในช่องต้นฉบับก่อน");S.pre=w;go("gl")},
+  copy:()=>cp(($("#tt")||{}).value||"","คัดลอกคำแปลแล้ว"),
+  addterm:()=>{const s=$("#ns").value.trim(),r=$("#nt").value.trim();if(!s||!r)return toast("กรอกทั้งคำต้นฉบับและคำแปล");S.glossary.unshift({id:uid(),u:1,at:Date.now(),src:s,tr:r,cat:$("#nc").value,note:$("#nn").value.trim()});S.ga=false;render();save()},
+  delg:()=>{S.glossary=S.glossary.filter(g=>g.id!==id);$("#gl").innerHTML=glRows();nav();save()},
+  rd:()=>{const L=S.chapters,i=L.findIndex(c=>c.id===S.last)+Number(t.dataset.d);if(L[i]){S.last=L[i].id;render();$("#v").scrollTop=0;save()}},
+  fs:()=>{S.fs=Math.min(30,Math.max(14,S.fs+Number(t.dataset.d)*2));render();save()},
+  bk:()=>dlg('<b>สำรอง / นำเข้าข้อมูล</b><p class="mute">คัดลอกข้อความนี้เก็บไว้ หรือวางข้อมูลที่สำรองไว้แล้วกดนำเข้า (นำเข้าจะแทนที่ข้อมูลปัจจุบัน คีย์ Gemini ไม่รวมอยู่ในข้อมูลสำรอง)</p><textarea id="js">'+esc(JSON.stringify({proj:S.proj,chapters:S.chapters,glossary:S.glossary}))+'</textarea><div class="bar" style="margin-top:8px"><button data-a="cpj">คัดลอก</button><button class="pri" data-a="imp">นำเข้า</button><button data-a="close">ปิด</button></div>'),
+  cpj:()=>cp($("#js").value,"คัดลอกข้อมูลสำรองแล้ว"),
+  imp:()=>{try{const j=JSON.parse($("#js").value);if(!Array.isArray(j.chapters)||!Array.isArray(j.glossary))throw 0;S=Object.assign(def(),S,{proj:j.proj||S.proj,chapters:j.chapters,glossary:j.glossary,sel:[],cur:null,last:null,tab:"ch"});d.close();render();save();toast("นำเข้าข้อมูลแล้ว")}catch(x){toast("รูปแบบข้อมูลไม่ถูกต้อง")}}
+ };
+ if(A[a])A[a]();
+});
+function cp(txt,msg){const ok=()=>toast(msg),fb=()=>{const ta=document.createElement("textarea");ta.value=txt;document.body.append(ta);ta.select();try{document.execCommand("copy");ok()}catch(e){toast("คัดลอกไม่ได้ ลองเลือกข้อความแล้วคัดลอกเอง")}ta.remove()};
+ if(navigator.clipboard)navigator.clipboard.writeText(txt).then(ok,fb);else fb()}
+async function readText(f){
+ if(/\.docx$/i.test(f.name)){if(!window.mammoth)throw new Error("โหลดตัวอ่าน DOCX ไม่ได้ (ต้องต่ออินเทอร์เน็ต)");return (await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+ const b=await f.arrayBuffer();
+ try{return new TextDecoder("utf-8",{fatal:true}).decode(b)}catch(e){return new TextDecoder("gb18030").decode(b)}
+}
+$("#fi").onchange=async e=>{
+ const fs=[...e.target.files].sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));let n=0,bad=[];
+ toast("กำลังนำเข้า "+fs.length+" ไฟล์...");
+ for(const f of fs){try{S.chapters.push({id:uid(),title:f.name.replace(/\.(txt|docx)$/i,""),src:(await readText(f)).trim(),tr:""});n++}catch(x){bad.push(f.name+": "+x.message)}}
+ e.target.value="";render();save();
+ toast(bad.length?"นำเข้า "+n+" ไฟล์ ไม่สำเร็จ "+bad.length+" ไฟล์ ("+bad[0]+")":"นำเข้า "+n+" ตอนแล้ว เรียงตามชื่อไฟล์");
+};
+render();
+</script>
+</body>
+</html>
