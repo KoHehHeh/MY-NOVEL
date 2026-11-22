@@ -210,18 +210,19 @@ function fit(a,text){
  for(const [f,t] of [[SMP,TRD],[TRD,SMP]]){const b=conv(a,[...f],[...t]);if(b!==a&&text.includes(b))return b}
  return null;
 }
+const KT=[...TRD],KS=[...SMP],nk=a=>conv(String(a||"").replace(/[\s\u3000]+/g,""),KT,KS);
 const goodSrc=a=>a.length>=2&&a.length<=14&&!/^[\d\s\p{P}\p{S}]+$/u.test(a);
 async function askTerms(sys,p){
  let raw;try{raw=await gcall(sys,p,SCH)}catch(e){if(/schema|INVALID_ARGUMENT|enum/i.test(e.message))raw=await gcall(sys,p,true);else throw e}
  return parseArr(raw);
 }
 async function extract(c,out){
- const have=new Set(S.glossary.map(g=>g.src));let raw=0,known=0;
+ const have=new Set(S.glossary.map(g=>nk(g.src)));let raw=0,known=0;
  const sc=scriptOf(c.src),hint=sc==="trad"?"ต้นฉบับเป็นอักษรจีนตัวเต็ม src ต้องเป็นตัวเต็มตามต้นฉบับ ห้ามแปลงเป็นตัวย่อ":sc==="simp"?"ต้นฉบับเป็นอักษรจีนตัวย่อ src ต้องเป็นตัวย่อตามต้นฉบับ ห้ามแปลงเป็นตัวเต็ม":"src ต้องเป็นอักษรเดียวกับต้นฉบับ";
  for(const p of chunks(c.src.trim(),6000)){
   if(STOP)throw new Error("หยุดแล้ว");
-  const kn=S.glossary.filter(g=>g.src&&p.includes(g.src)).map(g=>g.src+"="+g.tr);known+=kn.length;
-  const sys="คุณช่วยสกัดคำเฉพาะจากนิยาย ("+CFG.lang+") ตอบเป็น JSON array เท่านั้น แต่ละรายการคือ {\"src\":คำต้นฉบับ,\"tr\":คำแปลหรือทับศัพท์เป็นไทย,\"cat\":หนึ่งใน "+CATS.join("/")+",\"note\":หมายเหตุสั้นๆ หรือว่าง}\nเอาให้ครบ: ชื่อบุคคล ชื่อสถานที่ องค์กร เผ่าพันธุ์ คำเรียกขาน ชื่อวิชา ระบบ ระดับขั้น และสิ่งของสำคัญที่ปรากฏในข้อความ ไม่เอาคำทั่วไปและไม่เอาคำที่มีตัวอักษรเดียว\nsrc ต้องคัดลอกจากต้นฉบับตรงตัวทุกตัวอักษร ("+hint+")\nแนวทางการตั้งคำแปลในช่อง tr ตามหมวด:\n"+pol(NK)+(kn.length?"\nคำที่มีในคลังแล้ว ห้ามส่งซ้ำ:\n"+kn.slice(0,300).join("\n"):"");
+  const kp=nk(p),kn=S.glossary.filter(g=>g.src&&g.tr&&kp.includes(nk(g.src))).map(g=>g.src+"="+g.tr);known+=kn.length;
+  const sys="คุณช่วยสกัดคำเฉพาะจากนิยาย ("+CFG.lang+") ตอบเป็น JSON array เท่านั้น แต่ละรายการคือ {\"src\":คำต้นฉบับ,\"tr\":คำแปลหรือทับศัพท์เป็นไทย,\"cat\":หนึ่งใน "+CATS.join("/")+",\"note\":หมายเหตุสั้นๆ หรือว่าง}\nเอาให้ครบ: ชื่อบุคคล ชื่อสถานที่ องค์กร เผ่าพันธุ์ คำเรียกขาน ชื่อวิชา ระบบ ระดับขั้น และสิ่งของสำคัญที่ปรากฏในข้อความ ไม่เอาคำทั่วไปและไม่เอาคำที่มีตัวอักษรเดียว\nsrc ต้องคัดลอกจากต้นฉบับตรงตัวทุกตัวอักษร ("+hint+")\nแนวทางการตั้งคำแปลในช่อง tr ตามหมวด:\n"+pol(NK)+(kn.length?"\nคำที่มีในคลังแล้ว ห้ามส่งซ้ำและห้ามส่งคำแปลใหม่ให้คำเหล่านี้:\n"+kn.slice(0,300).join("\n"):"");
   let items=await askTerms(sys,p);
   if(!items.length&&kn.length<3){if(STOP)throw new Error("หยุดแล้ว");items=await askTerms(sys+"\nข้อความนี้มีชื่อเฉพาะแน่นอน ต้องส่งอย่างน้อยชื่อบุคคลและสถานที่ที่พบ",p)}
   raw+=items.length;
@@ -230,7 +231,7 @@ async function extract(c,out){
   if(bad.length&&!STOP){
    try{for(const r of await askTerms("ด้านล่างคือต้นฉบับและรายการคำที่สกัดไว้ แต่ src ของบางรายการไม่ตรงกับอักษรในต้นฉบับ ให้แก้ src โดยคัดลอกจากต้นฉบับตรงตัวทุกตัวอักษร ("+hint+") รายการใดหาในต้นฉบับไม่พบจริงให้ตัดทิ้ง ตอบเป็น JSON array รูปแบบเดิม","รายการ:\n"+JSON.stringify(bad.slice(0,40))+"\n\nต้นฉบับ:\n"+p)){const f=fit(r&&r.src,p),b=String((r&&r.tr)||"").trim();if(f&&b)ok.push({src:f,tr:b,cat:r.cat,note:r.note})}}catch(e){if(e.message==="หยุดแล้ว")throw e}
   }
-  for(const t of ok){if(have.has(t.src)||!goodSrc(t.src))continue;have.add(t.src);const g={id:uid(),src:t.src,tr:t.tr,cat:CATS.includes(t.cat)?t.cat:"อื่นๆ",at:Date.now(),note:String(t.note||"").trim()};S.glossary.push(g);out.push(g)}
+  for(const t of ok){if(have.has(nk(t.src))||!goodSrc(t.src))continue;have.add(nk(t.src));const g={id:uid(),src:t.src,tr:t.tr,cat:CATS.includes(t.cat)?t.cat:"อื่นๆ",at:Date.now(),note:String(t.note||"").trim()};S.glossary.push(g);out.push(g)}
   save();
  }
  const done=raw>0||known>0;if(done)c.ex=true;save();return done;
