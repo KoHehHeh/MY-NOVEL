@@ -2,6 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>โต๊ะแปลนิยาย</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600&family=Noto+Serif+Thai:wght@400;600&display=swap">
@@ -309,7 +310,7 @@ function sheetHTML(){
 function head(){
  const ed=S.tab==="ed";
  $("#hd").innerHTML=(ed?'<button class="ib" data-a="back" aria-label="กลับ">‹</button>':"")+
- '<div class="ttl"><b>'+esc(S.proj.name)+'</b><span class="mute">'+esc(S.proj.author?S.proj.author+" · ":"")+S.chapters.length+' ตอน</span></div>'+
+ '<div class="ttl"><b>'+esc(S.proj.name)+'</b><span class="mute">'+esc(S.proj.author?S.proj.author+" · ":"")+S.chapters.length+' ตอน · v6 ไม่เด้ง</span></div>'+
  (S.tab==="ch"?'<div class="seg"><button data-a="mode" data-m="auto" class="'+(S.mode==="auto"?"on":"")+'">อัตโนมัติ</button><button data-a="mode" data-m="man" class="'+(S.mode==="man"?"on":"")+'">ปรับแต่ง</button></div>':"")+
  '<button class="ib" data-a="bk" aria-label="สำรองข้อมูล">≡</button>';
 }
