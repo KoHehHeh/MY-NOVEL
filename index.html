@@ -425,7 +425,7 @@ document.addEventListener("click",e=>{
   mode:()=>{S.mode=t.dataset.m;render();save()},
   flt:()=>{S.filter=t.dataset.k;render()},
   sort:()=>{S.desc=!S.desc;render();toast(S.desc?"เรียงจากตอนล่าสุด":"เรียงจากตอนแรก")},
-  sel:()=>{const was=S.sel.length;S.sel=t.checked?[...S.sel,id]:S.sel.filter(x=>x!==id);if(!was&&S.sel.length)S.shOpen=true;render()},
+  sel:()=>{S.sel=t.checked?[...S.sel,id]:S.sel.filter(x=>x!==id);render()},
   selall:()=>{S.shOpen=false;const ids=S.chapters.filter(c=>S.filter==="all"||(S.filter==="fix"&&issues(c).length)||(S.filter==="todo"&&!c.tr.trim())||(S.filter==="done"&&c.tr.trim())).map(c=>c.id);S.sel=t.checked?[...new Set([...S.sel,...ids])]:S.sel.filter(x=>!ids.includes(x));render()},
   delsel:()=>{if(!S.sel.length)return toast("เลือกตอนที่ต้องการลบก่อน");ask("ลบ "+S.sel.length+" ตอนที่เลือกใช่ไหม",()=>{S.chapters=S.chapters.filter(c=>!S.sel.includes(c.id));S.sel=[];render();save()})},
   open:()=>{d.open&&d.close();S.cur=id;S.last=id;S.es=chap(id)&&chap(id).tr.trim()?"tr":"src";go("ed")},
