@@ -183,11 +183,11 @@ async function gcall(sys,user,json){
  const body={systemInstruction:{parts:[{text:sys}]},contents:[{role:"user",parts:[{text:user}]}]};
  if(json){body.generationConfig={responseMimeType:"application/json",maxOutputTokens:8192,temperature:0.2};if(json!==true)body.generationConfig.responseSchema=json}
  let r,d;
- for(let k=0;k<4;k++){
-  r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(CFG.model)+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":CFG.key},body:JSON.stringify(body)});
-  d=await r.json().catch(()=>({}));
-  if(r.status!==429&&r.status!==503)break;
-  if(k<3){toast("Gemini ยุ่งอยู่ รอแล้วลองใหม่...");await new Promise(z=>setTimeout(z,4000*2**k));if(STOP)throw new Error("หยุดแล้ว")}
+ for(let k=0;k<6;k++){
+  try{r=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(CFG.model)+":generateContent",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":CFG.key},body:JSON.stringify(body)});d=await r.json().catch(()=>({}))}
+  catch(e){if(k>=5||STOP)throw e;r=null}
+  if(r&&![429,500,502,503,504].includes(r.status))break;
+  if(k<5){toast("Gemini ยุ่งอยู่/เชื่อมต่อสะดุด รอแล้วลองใหม่ ("+(k+1)+"/5)...");await new Promise(z=>setTimeout(z,Math.min(5000*2**k,40000)));if(STOP)throw new Error("หยุดแล้ว")}
  }
  if(!r.ok)throw new Error(d.error&&d.error.message||"HTTP "+r.status);
  const c=((d.candidates||[])[0]||{}).content;
@@ -268,14 +268,34 @@ async function transOne(id,force){
  try{if(S.exf&&!c.ex){toast("กำลังสกัดคำ...");await extract(c,[])}c.tr=await trans(c);c.ta=Date.now();save();toast("แปลเสร็จแล้ว ตรวจและแก้ไขได้เลย")}catch(e){toast("แปลไม่สำเร็จ: "+em(e))}
  BUSY=false;prog="";render();
 }
+const fatal=m=>/API key|API_KEY|PERMISSION_DENIED|not found|is not supported/i.test(m||"");
 async function runAuto(force){
  if(RUN||BUSY||needKey())return;
  const pool=S.sel.length?S.chapters.filter(c=>S.sel.includes(c.id)):S.chapters,q=pool.filter(c=>c.src.trim()&&(force===true||!c.tr.trim()));
  if(!q.length)return toast("ไม่มีตอนที่ต้องแปล");
- RUN=true;STOP=false;const add=[],empty=[];
- for(let i=0;i<q.length&&!STOP;i++){prog="กำลังแปล "+(i+1)+"/"+q.length+": "+q[i].title;render();
-  try{if(S.exf&&!q[i].ex){prog="สกัดคำ "+(i+1)+"/"+q.length+": "+q[i].title;render();if(!(await extract(q[i],add)))empty.push(q[i].title)}prog="กำลังแปล "+(i+1)+"/"+q.length+": "+q[i].title;render();q[i].tr=await trans(q[i]);q[i].ta=Date.now();save()}catch(e){toast("หยุด: "+em(e));break}}
- RUN=false;prog="";if(force===true)S.sel=[];render();toast(STOP?"หยุดแล้ว":"จบการแปล"+(add.length?" · เพิ่มศัพท์ใหม่ "+add.length+" คำ":"")+(empty.length?" · สกัดคำไม่สำเร็จ "+empty.length+" ตอน":""));
+ RUN=true;STOP=false;const add=[],empty=[],fail=[];let ok=0,fa=false;
+ for(let i=0;i<q.length&&!STOP;i++){
+  const c=q[i];let err="";
+  for(let t=0;t<2&&!STOP;t++){
+   try{
+    if(S.exf&&!c.ex){prog="สกัดคำ "+(i+1)+"/"+q.length+": "+c.title;render();if(!(await extract(c,add)))empty.push(c.title)}
+    prog="กำลังแปล "+(i+1)+"/"+q.length+": "+c.title+(t?" (ลองใหม่)":"");render();
+    const tr=await trans(c);
+    if(tr.trim().length<c.src.trim().length*.8)throw new Error("คำแปลสั้นผิดปกติ (อาจถูกตัด)");
+    c.tr=tr;c.ta=Date.now();save();err="";break;
+   }catch(e){err=em(e);if(STOP||fatal(err)){fa=fatal(err);break}}
+  }
+  if(err&&!STOP)fail.push({c,err});else if(!err)ok++;
+  if(fa)break;
+ }
+ RUN=false;prog="";
+ if(force===true)S.sel=fail.map(x=>x.c.id);
+ render();
+ if(fail.length||fa){
+  dlg('<b style="font-size:19px">แปลได้ '+ok+' จาก '+q.length+' ตอน</b><p class="mute" style="color:var(--warn);margin:8px 0">'+(fa?"หยุดเพราะ: ":"")+'ตอนที่ไม่สำเร็จ:</p>'+fail.map(x=>'<div class="kv"><b>'+esc(x.c.title)+'</b><span class="mute" style="text-align:right">'+esc(x.err.slice(0,120))+'</span></div>').join("")+'<p class="mute">ตอนเหล่านี้ยังถูกเลือกค้างไว้ กดแปลอีกครั้งเพื่อทำต่อ ตอนที่แปลสำเร็จแล้วบันทึกไว้เรียบร้อย</p><div class="bar" style="justify-content:flex-end"><button class="pri" data-a="close">ปิด</button></div>');
+  return;
+ }
+ toast(STOP?"หยุดแล้ว แปลไปแล้ว "+ok+" ตอน":"จบการแปล "+ok+" ตอน"+(add.length?" · เพิ่มศัพท์ใหม่ "+add.length+" คำ":"")+(empty.length?" · สกัดคำไม่สำเร็จ "+empty.length+" ตอน":""));
 }
 
 /* ---------- views ---------- */
@@ -310,7 +330,7 @@ function sheetHTML(){
 function head(){
  const ed=S.tab==="ed";
  $("#hd").innerHTML=(ed?'<button class="ib" data-a="back" aria-label="กลับ">‹</button>':"")+
- '<div class="ttl"><b>'+esc(S.proj.name)+'</b><span class="mute">'+esc(S.proj.author?S.proj.author+" · ":"")+S.chapters.length+' ตอน · v6 ไม่เด้ง</span></div>'+
+ '<div class="ttl"><b>'+esc(S.proj.name)+'</b><span class="mute">'+esc(S.proj.author?S.proj.author+" · ":"")+S.chapters.length+' ตอน</span></div>'+
  (S.tab==="ch"?'<div class="seg"><button data-a="mode" data-m="auto" class="'+(S.mode==="auto"?"on":"")+'">อัตโนมัติ</button><button data-a="mode" data-m="man" class="'+(S.mode==="man"?"on":"")+'">ปรับแต่ง</button></div>':"")+
  '<button class="ib" data-a="bk" aria-label="สำรองข้อมูล">≡</button>';
 }
